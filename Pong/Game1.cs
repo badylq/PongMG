@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Game1;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -10,8 +13,9 @@ namespace Pong
 	public class Game1 : Game
 	{
 		GraphicsDeviceManager graphics;
-		SpriteBatch spriteBatch;
-		private Player player;
+		public static SpriteBatch spriteBatch;
+		public List<Player> Players;
+		private Ball ball;
 
 		public Game1()
 		{
@@ -27,10 +31,29 @@ namespace Pong
 		/// </summary>
 		protected override void Initialize()
 		{
-			player = new Player(this);
 			graphics.PreferredBackBufferHeight = 720;
 			graphics.PreferredBackBufferWidth = 1280;
 			graphics.ApplyChanges();
+
+			Players = new List<Player>(2);
+			Player player = new Player(this);
+			player.SetThickness(20);
+			player.SetSize(250);
+			player.SetPosition(OnScreenPosition.Left, OnScreenPosition.Center);
+			player.SetPlayerNumber(1);
+			Players.Add(player);
+			
+			player = new Player(this);
+			player.SetThickness(20);
+			player.SetSize(250);
+			player.SetPosition(OnScreenPosition.Right, OnScreenPosition.Center);
+			player.SetPlayerNumber(2);
+			Players.Add(player);
+
+			ball = new Ball(this);
+			ball.SetSize(40);
+			ball.SetSpeed(300);
+			ball.SetPosition(OnScreenPosition.Left, Players[0].Id);
 
 			base.Initialize();
 		}
@@ -65,8 +88,13 @@ namespace Pong
 		{
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 				Exit();
+			if(!ball.IsBallMoving() && Keyboard.GetState().IsKeyDown(Keys.Space))
+				ball.StartMoving();
 
-			// TODO: Add your update logic here
+			if(Keyboard.GetState().IsKeyDown(Keys.W))
+				Players[0].Move(new Vector2(0,-1));
+
+			ball.Update(gameTime);
 
 			base.Update(gameTime);
 		}
@@ -80,7 +108,11 @@ namespace Pong
 			GraphicsDevice.Clear(Color.Black);
 
 			spriteBatch.Begin();
-			player.Draw(spriteBatch);
+			foreach (var player in Players)
+			{
+				player.Draw(gameTime);
+			}
+			ball.Draw(gameTime);
 			spriteBatch.End();
 
 			base.Draw(gameTime);

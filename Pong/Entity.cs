@@ -6,15 +6,18 @@ using Microsoft.Xna.Framework;
 
 namespace Pong
 {
-	class Entity : DrawableGameComponent
+	public class Entity : DrawableGameComponent
 	{
 		public int Id;
+		public EntityType Type;
+		public Collider Collider;
 		protected Game game;
 
 		public Entity(Game game) : base(game)
 		{
 			this.DrawOrder = 1;
 			this.game = game;
+			this.Type = EntityType.Default;
 		}
 
 		public void SetDrawOrder(int drawOrder)
@@ -26,5 +29,18 @@ namespace Pong
 		{
 			this.Visible = visible;
 		}
+
+		public virtual Rectangle GetLocalBounds()
+		{
+			return new Rectangle(0,0,0,0);
+		}
+	}
+
+	public enum EntityType
+	{
+		Player,
+		Edge,
+		Ball,
+		Default
 	}
 }

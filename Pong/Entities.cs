@@ -36,11 +36,14 @@ namespace Pong
 
 		public Entity GetEntityById(int id)
 		{
-			foreach (var entity in entities)
+			for (int i = 0; i < entities.Count; i++)
 			{
-				if(entity.Id == id)
-					return entity;
+				if (entities[i].Id == id)
+				{
+					return entities[i];
+				}
 			}
+			//Console.WriteLine("Found Entity with ID:{0} of type {1}", id, entity.Type.ToString());
 			return null;
 		}
 
@@ -49,13 +52,30 @@ namespace Pong
 			entities.Remove(GetEntityById(id));
 		}
 
-		public void Draw(SpriteBatch spriteBatch)
+		public ICollection<Entity> GetEntitiesList()
 		{
+			return entities;
+		}
+
+		public ICollection<Entity> GetEntitiesOfType(EntityType type)
+		{
+			List<Entity> listOfEntities = new List<Entity>();
 			foreach (var entity in entities)
 			{
-				//entity.Draw();
+				if (entity.Type == type)
+				{
+					listOfEntities.Add(entity);
+				}
 			}
-		}
+			if (listOfEntities.Count == 0)
+			{
+				return null;
+			}
+			else
+			{
+				return listOfEntities;
+			}
+		} 
 
 		private static Entities _instance = null;
 		private int currentId;
