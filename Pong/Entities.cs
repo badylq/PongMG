@@ -43,7 +43,6 @@ namespace Pong
 					return entities[i];
 				}
 			}
-			//Console.WriteLine("Found Entity with ID:{0} of type {1}", id, entity.Type.ToString());
 			return null;
 		}
 

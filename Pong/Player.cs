@@ -1,17 +1,18 @@
-﻿using System;
-using Game1;
+﻿using Game1;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace Pong
 {
 	public class Player : Entity
 	{
+		private readonly Input input;
 		private readonly Texture2D pixelTexture;
+		public int PlayerNumer;
 		private Vector2 position;
 		private int size;
 		private int thickness;
-		public int PlayerNumer;
 
 		public Player(Game game) : base(game)
 		{
@@ -23,6 +24,7 @@ namespace Pong
 			size = 1;
 			PlayerNumer = 0;
 			Type = EntityType.Player;
+			input = new Input();
 			Collider = new Collider(GetLocalBounds());
 		}
 
@@ -35,6 +37,18 @@ namespace Pong
 
 		public override void Update(GameTime gameTime)
 		{
+			var moveVector = new Vector2(0, 0);
+			if (input.IsPressing(PlayerInput.Left))
+			{
+				moveVector.Y -= (float) (600*gameTime.ElapsedGameTime.TotalSeconds);
+			}
+			if (input.IsPressing(PlayerInput.Right))
+			{
+				moveVector.Y += (float) (600*gameTime.ElapsedGameTime.TotalSeconds);
+			}
+
+			Move(moveVector);
+
 			base.Update(gameTime);
 		}
 
@@ -62,7 +76,7 @@ namespace Pong
 			}
 			else
 			{
-				position.X = game.Window.ClientBounds.Width - thickness/2;
+				position.X = game.GraphicsDevice.DisplayMode.Width - thickness/2;
 			}
 			if (height == OnScreenPosition.Top)
 			{
@@ -72,11 +86,11 @@ namespace Pong
 			{
 				if (height == OnScreenPosition.Center)
 				{
-					position.Y = game.Window.ClientBounds.Height/2;
+					position.Y = game.GraphicsDevice.DisplayMode.Height / 2;
 				}
 				else
 				{
-					position.Y = game.Window.ClientBounds.Height - size/2;
+					position.Y = game.GraphicsDevice.DisplayMode.Height - size/2;
 				}
 			}
 			Collider.Update(GetLocalBounds());
@@ -135,7 +149,14 @@ namespace Pong
 
 		public override Rectangle GetLocalBounds()
 		{
-			return new Rectangle((int)GetLocation().X, (int)GetLocation().Y, thickness, size);
+			return new Rectangle((int) GetLocation().X, (int) GetLocation().Y, thickness, size);
+		}
+
+		public void SetInput(Keys moveLeft, Keys moveRight, Keys start)
+		{
+			input.BindKey(moveLeft, PlayerInput.Left);
+			input.BindKey(moveRight, PlayerInput.Right);
+			input.BindKey(start, PlayerInput.Start);
 		}
 	}
 }

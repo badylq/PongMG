@@ -31,8 +31,9 @@ namespace Pong
 		/// </summary>
 		protected override void Initialize()
 		{
-			graphics.PreferredBackBufferHeight = 720;
-			graphics.PreferredBackBufferWidth = 1280;
+			graphics.PreferredBackBufferHeight = 768;
+			graphics.PreferredBackBufferWidth = 1366;
+			graphics.IsFullScreen = true;
 			graphics.ApplyChanges();
 
 			Players = new List<Player>(2);
@@ -41,6 +42,7 @@ namespace Pong
 			player.SetSize(250);
 			player.SetPosition(OnScreenPosition.Left, OnScreenPosition.Center);
 			player.SetPlayerNumber(1);
+			player.SetInput(Keys.W, Keys.S, Keys.Space);
 			Players.Add(player);
 			
 			player = new Player(this);
@@ -48,11 +50,12 @@ namespace Pong
 			player.SetSize(250);
 			player.SetPosition(OnScreenPosition.Right, OnScreenPosition.Center);
 			player.SetPlayerNumber(2);
+			player.SetInput(Keys.Up,Keys.Down, Keys.LeftShift);
 			Players.Add(player);
 
 			ball = new Ball(this);
-			ball.SetSize(40);
-			ball.SetSpeed(300);
+			ball.SetSize(20);
+			ball.SetSpeed(600);
 			ball.SetPosition(OnScreenPosition.Left, Players[0].Id);
 
 			base.Initialize();
@@ -91,9 +94,11 @@ namespace Pong
 			if(!ball.IsBallMoving() && Keyboard.GetState().IsKeyDown(Keys.Space))
 				ball.StartMoving();
 
-			if(Keyboard.GetState().IsKeyDown(Keys.W))
-				Players[0].Move(new Vector2(0,-1));
-
+			for (int i = 0; i < Players.Count; i++)
+			{
+				Players[i].Update(gameTime);
+			}
+			
 			ball.Update(gameTime);
 
 			base.Update(gameTime);

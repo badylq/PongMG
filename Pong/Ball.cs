@@ -71,7 +71,7 @@ namespace Pong
 				}
 				else
 				{
-					if (verticalDirection == Direction.Down && position.Y > game.Window.ClientBounds.Bottom - size/2)
+					if (verticalDirection == Direction.Down && position.Y > game.GraphicsDevice.DisplayMode.Height - size/2)
 					{
 						verticalDirection = Direction.Up;
 					}
@@ -79,14 +79,23 @@ namespace Pong
 
 				foreach (var player in Entities.Instance.GetEntitiesOfType(EntityType.Player))
 				{
-					Collider.CheckCollision(player.Collider);
+					if (Collider.CheckCollision(player.Collider))
+					{
+						if (horizntalDirection == Direction.Left)
+						{
+							horizntalDirection = Direction.Right;
+						}
+						else
+						{
+							horizntalDirection = Direction.Left;
+						}
+					}
 				}
 			}
 			else
 			{
 				Player player = Entities.Instance.GetEntityById(playerId) as Player;
 				position.Y = player.GetLocalBounds().Center.Y;
-				//Console.WriteLine("Y:{0}", playerBounds.Center.Y);
 			}
 			base.Update(gameTime);
 		}
@@ -104,6 +113,7 @@ namespace Pong
 
 		public void SetPosition(OnScreenPosition side, int playerId)
 		{
+			this.playerId = playerId;
 			Player player = Entities.Instance.GetEntityById(playerId) as Player;
 			Rectangle playerBounds = player.GetLocalBounds();
 			if (side == OnScreenPosition.Left)
